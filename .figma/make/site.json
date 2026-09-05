@@ -1,0 +1,11 @@
+{
+  "title": "Zigo",
+  "description": "Enables users to seamlessly browse and order from Zigo's mobile-first platform, enhancing convenience and efficiency for on-the-go customers.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
