@@ -3,17 +3,31 @@ interface IconProps {
   size?: number;
 }
 
-export const HomeIcon = ({ className = '', size = 24 }: IconProps) => (
+export const HomeIcon = ({ className = '', size = 24, filled = false }: IconProps & { filled?: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 21V13h6v8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    {filled ? (
+      <>
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 21V13h6v8" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+      </>
+    ) : (
+      <>
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M9 21V13h6v8" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+      </>
+    )}
   </svg>
 );
 
-export const CompassIcon = ({ className = '', size = 24 }: IconProps) => (
+export const CompassIcon = ({ className = '', size = 24, filled = false }: IconProps & { filled?: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.75"/>
-    <path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"/>
+    <circle cx="12" cy="12" r="9" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.75"/>
+    <path
+      d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z"
+      fill={filled ? 'white' : 'none'}
+      stroke={filled ? 'white' : 'currentColor'}
+      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"
+    />
   </svg>
 );
 
@@ -23,10 +37,26 @@ export const BookmarkIcon = ({ className = '', size = 24, filled = false }: Icon
   </svg>
 );
 
-export const SearchIcon = ({ className = '', size = 24 }: IconProps) => (
+export const SearchIcon = ({ className = '', size = 24, filled = false }: IconProps & { filled?: boolean }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
-    <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.75"/>
-    <path d="M20 20l-3-3" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"/>
+    <circle cx="11" cy="11" r="7" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.75"/>
+    <path d="M20 20l-3-3" stroke={filled ? 'white' : 'currentColor'} strokeWidth="1.75" strokeLinecap="round"/>
+    {filled && <path d="M14.5 7.5a4.5 4.5 0 01-4.5 6.5" stroke="white" strokeWidth="1.25" strokeLinecap="round" opacity="0.5"/>}
+  </svg>
+);
+
+export const UserIcon = ({ className = '', size = 24, filled = false }: IconProps & { filled?: boolean }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+    <circle
+      cx="12" cy="8" r="4"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor" strokeWidth="1.75"
+    />
+    <path
+      d="M4 20c0-3.314 3.582-6 8-6s8 2.686 8 6"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor" strokeWidth="1.75" strokeLinecap="round"
+    />
   </svg>
 );
 

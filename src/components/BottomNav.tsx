@@ -1,91 +1,159 @@
-import { HomeIcon, CompassIcon, BookmarkIcon } from './Icons';
+import { useState, useEffect, useRef, type ReactNode } from 'react';
+import { HomeIcon, SearchIcon, CompassIcon, BookmarkIcon } from './Icons';
 
 interface BottomNavProps {
-  active: 'home' | 'explore' | 'saved';
+  active: 'home' | 'search' | 'explore' | 'saved';
   onHome: () => void;
+  onSearch: () => void;
   onExplore: () => void;
   onSaved: () => void;
 }
 
-export default function BottomNav({ active, onHome, onExplore, onSaved }: BottomNavProps) {
-  const tabs = [
-    { id: 'home'    as const, label: 'Home',    Icon: HomeIcon,     onClick: onHome },
-    { id: 'explore' as const, label: 'Explore',  Icon: CompassIcon,  onClick: onExplore },
-    { id: 'saved'   as const, label: 'Saved',    Icon: BookmarkIcon, onClick: onSaved },
+const LIQUID = 'cubic-bezier(0.25, 1.55, 0.5, 1)';
+
+export default function BottomNav({ active, onHome, onSearch, onExplore, onSaved }: BottomNavProps) {
+  const tabs: { id: 'home' | 'search' | 'explore' | 'saved'; label: string; icon: (a: boolean) => ReactNode; onClick: () => void }[] = [
+    { id: 'home',    label: 'Home',    icon: (a) => <HomeIcon     size={22} filled={a} />, onClick: onHome    },
+    { id: 'search',  label: 'Search',  icon: (a) => <SearchIcon   size={22} filled={a} />, onClick: onSearch  },
+    { id: 'explore', label: 'Explore', icon: (a) => <CompassIcon  size={22} filled={a} />, onClick: onExplore },
+    { id: 'saved',   label: 'Saved',   icon: (a) => <BookmarkIcon size={22} filled={a} />, onClick: onSaved   },
   ];
 
-  const activeIndex = tabs.findIndex(t => t.id === active);
+  const n = tabs.length;
+  const ai = tabs.findIndex(t => t.id === active);
+  const prevAi = useRef(ai);
+
+  const BASE_W = 64;
+  const STRETCH_W = 80;
+  const [bw, setBw] = useState(BASE_W);
+
+  useEffect(() => {
+    if (prevAi.current === ai) return;
+    prevAi.current = ai;
+    setBw(STRETCH_W);
+    const t = setTimeout(() => setBw(BASE_W), 220);
+    return () => clearTimeout(t);
+  }, [ai]);
 
   return (
     <div
-      className="absolute bottom-0 left-0 right-0 px-[5px] pb-4 pt-0 pointer-events-none"
-      style={{ zIndex: 50 }}
+      className="absolute bottom-0 left-0 right-0 pointer-events-none"
+      style={{
+        zIndex: 50,
+        paddingLeft: 20,
+        paddingRight: 20,
+        paddingBottom: `calc(16px + env(safe-area-inset-bottom, 0px))`,
+      }}
     >
-      <nav
-        className="relative flex items-stretch rounded-full px-2"
+      {/* ── Liquid glass pill — dark-tinted so icons always read ── */}
+      <div
+        className="relative rounded-full pointer-events-auto"
         style={{
-          pointerEvents: 'auto',
-          background: 'rgba(16, 14, 28, 0.52)',
-          backdropFilter: 'blur(28px) saturate(200%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(200%)',
-          border: '1px solid rgba(255,255,255,0.13)',
-          boxShadow:
-            '0 8px 32px rgba(8,6,18,0.40), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.15)',
+          // Dark purple-tinted glass: guarantees white icon contrast on any background
+          background: 'rgba(14, 10, 36, 0.58)',
+          backdropFilter: 'blur(28px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: [
+            'inset 0 1px 0 rgba(255,255,255,0.22)',     // top specular edge
+            'inset 0 -1px 0 rgba(255,255,255,0.06)',    // bottom inner
+            '0 20px 56px rgba(14,10,36,0.40)',          // deep lift shadow
+            '0 6px 18px rgba(0,0,0,0.22)',
+            '0 1px 3px rgba(0,0,0,0.14)',
+          ].join(', '),
         }}
       >
-        {/* Sliding glass pill — left-positioned so it aligns with padded buttons */}
+        {/* Glass surface highlight — top half shimmer */}
         <div
           aria-hidden
-          className="absolute top-1.5 bottom-1.5 rounded-full pointer-events-none"
           style={{
-            width: `calc((100% - 16px) / ${tabs.length})`,
-            left: `calc(8px + ${activeIndex} * (100% - 16px) / ${tabs.length})`,
-            transition: 'left 0.42s cubic-bezier(0.34, 1.48, 0.64, 1)',
-            background: 'rgba(255,255,255,0.13)',
-            backdropFilter: 'blur(10px) brightness(1.3)',
-            WebkitBackdropFilter: 'blur(10px) brightness(1.3)',
-            border: '1px solid rgba(255,255,255,0.22)',
-            boxShadow:
-              'inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.12)',
+            position: 'absolute', top: 0, left: 0, right: 0,
+            height: '48%',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 100%)',
+            borderRadius: '999px 999px 0 0',
+            pointerEvents: 'none',
           }}
         />
 
-        {tabs.map(({ id, label, Icon, onClick }) => {
-          const isActive = active === id;
-          return (
-            <button
-              key={id}
-              onClick={onClick}
-              className="flex-1 flex flex-col items-center justify-center gap-1 relative z-10 active:scale-95 transition-transform"
-              style={{
-                paddingTop: 14,
-                paddingBottom: `calc(14px + env(safe-area-inset-bottom, 0px))`,
-                transitionDuration: '0.15s',
-              }}
-            >
-              <div
-                className="transition-all duration-300"
-                style={{ filter: isActive ? 'drop-shadow(0 0 6px rgba(255,255,255,0.45))' : 'none' }}
-              >
-                <Icon
-                  size={21}
-                  className={isActive ? 'text-white' : 'text-white/35'}
-                />
-              </div>
-              <span
-                className="text-[10px] font-bold tracking-wide"
+        {/* ── Liquid bubble — stretches on transition, springs to target ── */}
+        <div
+          aria-hidden
+          style={{
+            position: 'absolute',
+            top: 7,
+            height: 46,
+            width: bw,
+            borderRadius: 999,
+            left: `calc(${ai} * (100% / ${n}) + (100% / ${n} - ${bw}px) / 2)`,
+            transition: [
+              `left 420ms ${LIQUID}`,
+              `width 260ms cubic-bezier(0.34, 1.4, 0.64, 1)`,
+            ].join(', '),
+            background: 'rgba(255,255,255,0.18)',
+            border: '1px solid rgba(255,255,255,0.32)',
+            boxShadow: [
+              'inset 0 1px 0 rgba(255,255,255,0.55)',
+              'inset 0 -1px 0 rgba(0,0,0,0.08)',
+              '0 4px 14px rgba(0,0,0,0.18)',
+            ].join(', '),
+            pointerEvents: 'none',
+          }}
+        >
+          {/* Bubble inner highlight */}
+          <div
+            aria-hidden
+            style={{
+              position: 'absolute', inset: 0, borderRadius: 999,
+              background: 'linear-gradient(150deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0) 50%)',
+              pointerEvents: 'none',
+            }}
+          />
+        </div>
+
+        {/* ── Tabs ── */}
+        <div className="relative flex" style={{ zIndex: 10 }}>
+          {tabs.map(({ id, label, icon, onClick }) => {
+            const isActive = active === id;
+            return (
+              <button
+                key={id}
+                onClick={onClick}
+                className="flex-1 flex flex-col items-center active:scale-[0.88] transition-transform"
                 style={{
-                  fontFamily: 'Nunito, sans-serif',
-                  color: isActive ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.30)',
-                  transition: 'color 0.3s ease',
+                  paddingTop: 13,
+                  paddingBottom: 13,
+                  gap: 4,
+                  transitionDuration: '0.10s',
                 }}
               >
-                {label}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
+                <div
+                  style={{
+                    color: isActive ? '#ffffff' : 'rgba(255,255,255,0.45)',
+                    transition: 'color 220ms ease',
+                    filter: isActive ? 'drop-shadow(0 0 6px rgba(255,255,255,0.55))' : 'none',
+                    lineHeight: 0,
+                  }}
+                >
+                  {icon(isActive)}
+                </div>
+                <span
+                  style={{
+                    fontFamily: 'Nunito, sans-serif',
+                    fontSize: 10,
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? '#ffffff' : 'rgba(255,255,255,0.42)',
+                    transition: 'color 220ms ease',
+                    lineHeight: 1,
+                    letterSpacing: '0.01em',
+                  }}
+                >
+                  {label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

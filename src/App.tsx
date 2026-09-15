@@ -104,10 +104,10 @@ export default function App() {
   const activeArticle = activeArticleId ? articles.find(a => a.id === activeArticleId) ?? null : null;
   const isBookmarked = (id: string) => bookmarks.includes(id);
   const showNav = screen !== 'onboarding' && screen !== 'article';
-  const navActive = (screen === 'home' || screen === 'search') ? 'home'
+  const navActive = screen === 'search' ? 'search'
     : screen === 'explore' ? 'explore'
     : screen === 'saved' ? 'saved'
-    : (prevScreen as 'home' | 'explore' | 'saved') || 'home';
+    : 'home';
 
   const hasOverlay = !!(dictionaryEntry || showTTS || showNoteInput || shareContent);
 
@@ -131,7 +131,6 @@ export default function App() {
                 activeCategory={activeCategory}
                 onCategoryChange={setActiveCategory}
                 onOpenArticle={openArticle}
-                onSearch={() => navigate('search')}
                 isBookmarked={isBookmarked}
                 onToggleBookmark={toggleBookmark}
               />
@@ -139,7 +138,7 @@ export default function App() {
           )}
 
           {screen === 'article' && activeArticle && (
-            <div className="h-full">
+            <div key={activeArticle.id} className="h-full screen-slide-up">
               <ArticleReader
                 article={activeArticle}
                 isBookmarked={isBookmarked(activeArticle.id)}
@@ -194,7 +193,7 @@ export default function App() {
                 searchQuery={searchQuery}
                 onSearchChange={setSearchQuery}
                 onOpenArticle={openArticle}
-                onBack={() => { setSearchQuery(''); navigate(prevScreen || 'home'); }}
+                onBack={() => { setSearchQuery(''); navigate('home'); }}
               />
             </div>
           )}
@@ -203,8 +202,9 @@ export default function App() {
         {/* Bottom nav */}
         {showNav && (
           <BottomNav
-            active={navActive as 'home' | 'explore' | 'saved'}
+            active={navActive as 'home' | 'search' | 'explore' | 'saved'}
             onHome={() => navigate('home')}
+            onSearch={() => navigate('search')}
             onExplore={() => navigate('explore')}
             onSaved={() => navigate('saved')}
           />

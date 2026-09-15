@@ -49,3 +49,50 @@ body {
   background-color: #DFECFD;
   color: #0E6DFD;
 }
+
+/* ── Tab + feed microanimation system ── */
+
+/* Directional content crossfade */
+@keyframes feedRight {
+  from { opacity: 0; transform: translateX(8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes feedLeft {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Card reveal (used with animation-delay for stagger) */
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Icon press-and-release on tap */
+@keyframes iconPress {
+  0%   { transform: scale(0.92); }
+  55%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* Screen slide-up (article / search overlays) */
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.feed-right  { animation: feedRight  260ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.feed-left   { animation: feedLeft   260ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.card-reveal { animation: cardReveal 280ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+.icon-pressed { animation: iconPress 220ms cubic-bezier(0.34, 1.1, 0.64, 1) both; }
+.screen-slide-up { animation: slideUp 340ms cubic-bezier(0.32, 0.72, 0, 1) both; }
+
+/* Reduced motion: replace all movement with fast crossfade */
+@media (prefers-reduced-motion: reduce) {
+  .feed-right, .feed-left, .card-reveal { animation: rmFade 140ms ease both !important; }
+  .icon-pressed, .screen-slide-up { animation: none !important; }
+}
+@keyframes rmFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
